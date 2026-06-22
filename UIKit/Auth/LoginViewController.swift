@@ -29,6 +29,7 @@ class LoginViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupProgrammaticUIIfNeeded()
         setupGradientBackground()
         styleUIElements()
         setupTapGesture()
@@ -61,6 +62,7 @@ class LoginViewController: UIViewController {
         // UILabel
         titleLabel?.textColor    = .white
         subtitleLabel?.textColor = .systemGray
+        usuarioLabel?.text = "Correo"
         usuarioLabel?.textColor  = .systemGray2
         passwordLabel?.textColor = .systemGray2
         errorLabel?.textColor    = .systemRed
@@ -81,6 +83,11 @@ class LoginViewController: UIViewController {
             tf.leftView = pad
             tf.leftViewMode = .always
         }
+        usuarioTextField?.placeholder = "correo@ejemplo.com"
+        usuarioTextField?.keyboardType = .emailAddress
+        usuarioTextField?.autocapitalizationType = .none
+        usuarioTextField?.autocorrectionType = .no
+        passwordTextField?.isSecureTextEntry = true
 
         // UIButton — Ingresar
         loginButton?.backgroundColor = UIColor(red: 0.25, green: 0.52, blue: 0.96, alpha: 1.0)
@@ -100,43 +107,142 @@ class LoginViewController: UIViewController {
 
     @objc private func dismissKeyboard() { view.endEditing(true) }
 
+    private func setupProgrammaticUIIfNeeded() {
+        guard usuarioTextField == nil else { return }
+
+        let logo = UIImageView()
+        logo.translatesAutoresizingMaskIntoConstraints = false
+        logo.contentMode = .scaleAspectFit
+
+        let title = UILabel()
+        title.translatesAutoresizingMaskIntoConstraints = false
+        title.text = "TecStore Manager"
+        title.font = UIFont.systemFont(ofSize: 30, weight: .bold)
+        title.textAlignment = .center
+
+        let subtitle = UILabel()
+        subtitle.translatesAutoresizingMaskIntoConstraints = false
+        subtitle.text = "Inicia sesión con Firebase"
+        subtitle.font = UIFont.systemFont(ofSize: 15, weight: .regular)
+        subtitle.textAlignment = .center
+
+        let emailLabel = makeFieldLabel("Correo")
+        let emailField = makeTextField(placeholder: "correo@ejemplo.com")
+
+        let passLabel = makeFieldLabel("Contraseña")
+        let passField = makeTextField(placeholder: "Mínimo 6 caracteres")
+        passField.isSecureTextEntry = true
+
+        let error = UILabel()
+        error.translatesAutoresizingMaskIntoConstraints = false
+        error.font = UIFont.systemFont(ofSize: 13)
+        error.numberOfLines = 0
+        error.textAlignment = .center
+
+        let login = UIButton(type: .system)
+        login.translatesAutoresizingMaskIntoConstraints = false
+        login.setTitle("Ingresar", for: .normal)
+        login.addTarget(self, action: #selector(handleLogin(_:)), for: .touchUpInside)
+
+        let register = UIButton(type: .system)
+        register.translatesAutoresizingMaskIntoConstraints = false
+        register.setTitle("¿No tienes cuenta? Regístrate", for: .normal)
+        register.addTarget(self, action: #selector(goToRegister(_:)), for: .touchUpInside)
+
+        let stack = UIStackView(arrangedSubviews: [
+            logo, title, subtitle,
+            emailLabel, emailField,
+            passLabel, passField,
+            error, login, register
+        ])
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .vertical
+        stack.spacing = 10
+        stack.setCustomSpacing(20, after: subtitle)
+        stack.setCustomSpacing(18, after: passField)
+        view.addSubview(stack)
+
+        NSLayoutConstraint.activate([
+            stack.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 28),
+            stack.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -28),
+            stack.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor),
+
+            logo.heightAnchor.constraint(equalToConstant: 78),
+            emailField.heightAnchor.constraint(equalToConstant: 50),
+            passField.heightAnchor.constraint(equalToConstant: 50),
+            login.heightAnchor.constraint(equalToConstant: 52),
+        ])
+
+        logoImageView = logo
+        titleLabel = title
+        subtitleLabel = subtitle
+        usuarioLabel = emailLabel
+        usuarioTextField = emailField
+        passwordLabel = passLabel
+        passwordTextField = passField
+        errorLabel = error
+        loginButton = login
+        registerButton = register
+    }
+
+    private func makeFieldLabel(_ text: String) -> UILabel {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = text
+        label.font = UIFont.systemFont(ofSize: 13, weight: .semibold)
+        return label
+    }
+
+    private func makeTextField(placeholder: String) -> UITextField {
+        let textField = UITextField()
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.placeholder = placeholder
+        textField.borderStyle = .none
+        return textField
+    }
+
     // MARK: - IBActions
 
     /// Acción del UIButton "Ingresar" — conectado en Storyboard
     @IBAction func handleLogin(_ sender: UIButton) {
-        let usuario  = usuarioTextField?.text ?? ""
+        let email  = usuarioTextField?.text ?? ""
         let password = passwordTextField?.text ?? ""
+        setLoading(true)
 
-        let exitoso = viewModel.login(usuario: usuario, password: password)
-        errorLabel?.text = viewModel.errorMessage
+        Task { @MainActor [weak self] in
+            guard let self = self else { return }
+            let exitoso = await self.viewModel.loginConFirebase(email: email, password: password)
+            self.setLoading(false)
+            self.errorLabel?.text = self.viewModel.errorMessage
 
-        if exitoso {
-            // Navegar al Dashboard (UIKit)
-            let storyboard   = UIStoryboard(name: "Main", bundle: nil)
-            let dashboardVC  = storyboard.instantiateViewController(withIdentifier: "DashboardVC") as! DashboardViewController
-            dashboardVC.currentUser = viewModel.currentUser
-            navigationController?.setNavigationBarHidden(false, animated: true)
-            navigationController?.pushViewController(dashboardVC, animated: true)
-        } else {
-            // UIAlertController — Error de credenciales
-            let alert = UIAlertController(
-                title: "Error de Acceso",
-                message: viewModel.errorMessage,
-                preferredStyle: .alert
-            )
-            alert.addAction(UIAlertAction(title: "Intentar de nuevo", style: .default))
-            present(alert, animated: true)
-            if let utf = usuarioTextField { shakeView(utf) }
-            if let ptf = passwordTextField { shakeView(ptf) }
+            if exitoso {
+                self.navigationController?.setNavigationBarHidden(false, animated: true)
+                self.performSegue(withIdentifier: "LoginToDashboardSegue", sender: sender)
+            } else {
+                let alert = UIAlertController(
+                    title: "Error de Acceso",
+                    message: self.viewModel.errorMessage,
+                    preferredStyle: .alert
+                )
+                alert.addAction(UIAlertAction(title: "Intentar de nuevo", style: .default))
+                self.present(alert, animated: true)
+                if let utf = self.usuarioTextField { self.shakeView(utf) }
+                if let ptf = self.passwordTextField { self.shakeView(ptf) }
+            }
         }
     }
 
     /// Acción del UIButton "¿No tienes cuenta?" — conectado en Storyboard
     @IBAction func goToRegister(_ sender: UIButton) {
-        let storyboard  = UIStoryboard(name: "Main", bundle: nil)
-        let registroVC  = storyboard.instantiateViewController(withIdentifier: "RegistroVC")
         navigationController?.setNavigationBarHidden(false, animated: true)
-        navigationController?.pushViewController(registroVC, animated: true)
+        performSegue(withIdentifier: "LoginToRegistroSegue", sender: sender)
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "LoginToDashboardSegue",
+           let dashboardVC = segue.destination as? DashboardViewController {
+            dashboardVC.currentUser = viewModel.currentUser
+        }
     }
 
     // MARK: - Animación Shake
@@ -146,5 +252,12 @@ class LoginViewController: UIViewController {
         anim.duration = 0.5
         anim.values   = [-10, 10, -8, 8, -5, 5, 0]
         view.layer.add(anim, forKey: "shake")
+    }
+
+    private func setLoading(_ loading: Bool) {
+        loginButton?.isEnabled = !loading
+        registerButton?.isEnabled = !loading
+        loginButton?.alpha = loading ? 0.65 : 1
+        loginButton?.setTitle(loading ? "Ingresando..." : "Ingresar", for: .normal)
     }
 }

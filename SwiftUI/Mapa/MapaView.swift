@@ -20,18 +20,28 @@ struct MapaView: View {
     @State private var referenciaTexto     = ""
     @State private var showSuccessAlert    = false
     @State private var showErrorAlert      = false
+    @State private var cameraPosition: MapCameraPosition = .region(
+        MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: -12.0464, longitude: -77.0428),
+            span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+        )
+    )
 
     // MARK: - Body
     var body: some View {
         NavigationStack {
             ZStack {
                 // Map — MapKit
-                Map(coordinateRegion: $viewModel.region,
-                    showsUserLocation: true,
-                    annotationItems: viewModel.anotaciones) { anotacion in
-                    MapAnnotation(coordinate: anotacion.coordenada) {
-                        MapPinView(titulo: anotacion.titulo)
+                Map(position: $cameraPosition) {
+                    UserAnnotation()
+                    ForEach(viewModel.anotaciones) { anotacion in
+                        Annotation(anotacion.titulo, coordinate: anotacion.coordenada) {
+                            MapPinView(titulo: anotacion.titulo)
+                        }
                     }
+                }
+                .onReceive(viewModel.$region) { region in
+                    cameraPosition = .region(region)
                 }
                 .ignoresSafeArea(edges: .bottom)
 

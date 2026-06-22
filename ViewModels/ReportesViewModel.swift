@@ -88,8 +88,16 @@ final class ReportesViewModel: ObservableObject {
 
         var dict: [String: Int32] = [:]
         for venta in ventas {
-            let nombre = venta.producto?.nombreSafe ?? "Desconocido"
-            dict[nombre, default: 0] += venta.cantidad
+            let detalles = venta.detallesArray
+            if detalles.isEmpty {
+                let nombre = venta.producto?.nombreSafe ?? "Desconocido"
+                dict[nombre, default: 0] += venta.cantidad
+            } else {
+                for detalle in detalles {
+                    let nombre = detalle.producto?.nombreSafe ?? "Desconocido"
+                    dict[nombre, default: 0] += detalle.cantidad
+                }
+            }
         }
 
         topProductos = dict.sorted { $0.value > $1.value }

@@ -3,7 +3,7 @@
 //  TecStoreManager
 //
 //  Pantalla SwiftUI: Registro de Venta
-//  Componentes: Form, Picker (cliente/producto), TextField (cantidad), Text (cálculos auto), Button
+//  Componentes: Form, Picker (cliente/producto), TextField (cantidad), lista de items, Text (cálculos auto), Button
 //
 
 import SwiftUI
@@ -88,7 +88,7 @@ struct RegistroVentaView: View {
                     }
                     .listRowBackground(Color.white.opacity(0.07))
 
-                    // Sección: Cantidad
+                    // Sección: Cantidad y agregar item
                     Section {
                         HStack {
                             Image(systemName: "number").foregroundColor(.orange)
@@ -97,16 +97,66 @@ struct RegistroVentaView: View {
                                 .keyboardType(.numberPad)
                                 .foregroundColor(.white)
                         }
+                        Button {
+                            handleAgregarProducto()
+                        } label: {
+                            HStack {
+                                Spacer()
+                                Image(systemName: "plus.circle.fill")
+                                Text("Agregar producto a la venta")
+                                    .fontWeight(.semibold)
+                                Spacer()
+                            }
+                            .foregroundColor(.white)
+                            .padding(.vertical, 6)
+                        }
+                        .background(Color(red: 0.25, green: 0.52, blue: 0.96))
+                        .cornerRadius(10)
                     } header: {
                         Label("Cantidad", systemImage: "tray.full")
                             .foregroundColor(.gray)
                     }
                     .listRowBackground(Color.white.opacity(0.07))
 
-                    // Sección: Cálculos Automáticos (Text, solo lectura)
-                    if ventaVM.productoSeleccionado != nil && !ventaVM.cantidadTexto.isEmpty {
+                    if !ventaVM.items.isEmpty {
                         Section {
-                            calculoRow(label: "Subtotal", valor: ventaVM.subtotal, color: .white)
+                            ForEach(ventaVM.items) { item in
+                                HStack(alignment: .top, spacing: 10) {
+                                    Image(systemName: "cube.box.fill")
+                                        .foregroundColor(Color(red: 0.93, green: 0.42, blue: 0.28))
+                                    VStack(alignment: .leading, spacing: 3) {
+                                        Text(item.producto.nombreSafe)
+                                            .foregroundColor(.white)
+                                            .font(.system(size: 14, weight: .semibold))
+                                        Text("Cantidad: \(item.cantidad) · P. unit: \(ventaVM.formatCurrency(item.producto.precio))")
+                                            .font(.caption)
+                                            .foregroundColor(.gray)
+                                    }
+                                    Spacer()
+                                    Text(ventaVM.formatCurrency(item.subtotal))
+                                        .font(.caption)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(Color(red: 0.25, green: 0.85, blue: 0.55))
+                                }
+                                .swipeActions(edge: .trailing) {
+                                    Button(role: .destructive) {
+                                        ventaVM.eliminarItem(item)
+                                    } label: {
+                                        Label("Quitar", systemImage: "trash")
+                                    }
+                                }
+                            }
+                        } header: {
+                            Label("Productos agregados", systemImage: "cart.fill")
+                                .foregroundColor(.gray)
+                        }
+                        .listRowBackground(Color.white.opacity(0.07))
+                    }
+
+                    // Sección: Cálculos Automáticos (Text, solo lectura)
+                    if !ventaVM.items.isEmpty {
+                        Section {
+                            calculoRow(label: "Subtotal", valor: ventaVM.subtotalVenta, color: .white)
                             calculoRow(label: "IGV (18%)", valor: ventaVM.igv, color: Color(red: 0.93, green: 0.68, blue: 0.10))
                             Divider().background(Color.white.opacity(0.1))
                             calculoRow(label: "TOTAL", valor: ventaVM.total, color: Color(red: 0.25, green: 0.85, blue: 0.55))
@@ -160,11 +210,20 @@ struct RegistroVentaView: View {
     }
 
     // MARK: - Helpers
+    private func handleAgregarProducto() {
+        let ok = ventaVM.agregarProductoSeleccionado()
+        if !ok {
+            esExitoso = false
+            alertMsg = ventaVM.errorMessage
+            showAlert = true
+        }
+    }
+
     private func handleRegistrar() {
         let ok = ventaVM.registrarVenta()
         esExitoso = ok
         alertMsg  = ok
-            ? "La venta fue registrada exitosamente. El stock del producto fue actualizado."
+            ? "La venta fue registrada exitosamente. El stock de los productos fue actualizado."
             : ventaVM.errorMessage
         showAlert = true
     }

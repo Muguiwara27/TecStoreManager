@@ -11,15 +11,20 @@ import UIKit
 class ProductoDetalleViewController: UIViewController {
 
     // MARK: - Dependencias
-    private let producto: Producto
-    private let viewModel: ProductoViewModel
+    var producto: Producto?
+    var viewModel: ProductoViewModel
 
     init(producto: Producto, viewModel: ProductoViewModel) {
         self.producto  = producto
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
-    required init?(coder: NSCoder) { fatalError() }
+
+    required init?(coder: NSCoder) {
+        self.producto = nil
+        self.viewModel = ProductoViewModel()
+        super.init(coder: coder)
+    }
 
     // MARK: - UI
 
@@ -147,6 +152,19 @@ class ProductoDetalleViewController: UIViewController {
 
     // MARK: - Cargar datos
     private func cargarDatos() {
+        guard let producto else {
+            nombreLabel.text = "Producto no seleccionado"
+            codigoLabel.text = "Abre esta pantalla desde la lista de productos."
+            categoriaLabel.text = "Categoria: -"
+            precioLabel.text = "Precio: -"
+            stockLabel.text = "Stock: -"
+            fechaLabel.text = "Registrado: -"
+            estadoLabel.text = "Estado: -"
+            ventasLabel.text = "Ventas realizadas: -"
+            editarButton.isEnabled = false
+            eliminarButton.isEnabled = false
+            return
+        }
         nombreLabel.text   = producto.nombreSafe
         codigoLabel.text   = "Código: \(producto.codigoSafe)"
         categoriaLabel.text = "📦  Categoría: \(producto.categoriaSafe)"
@@ -168,15 +186,12 @@ class ProductoDetalleViewController: UIViewController {
     }
 
     @objc private func handleEditar() {
-        let formVC = ProductoFormViewController(viewModel: viewModel, producto: producto)
-        formVC.onSave = { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
-        }
-        let nav = UINavigationController(rootViewController: formVC)
-        present(nav, animated: true)
+        guard let producto else { return }
+        performSegue(withIdentifier: "DetalleToFormSegue", sender: producto)
     }
 
     @objc private func handleEliminar() {
+        guard let producto else { return }
         let alert = UIAlertController(
             title: "Eliminar Producto",
             message: "¿Estás seguro de eliminar '\(producto.nombreSafe)'? Esta acción no se puede deshacer.",
@@ -184,7 +199,7 @@ class ProductoDetalleViewController: UIViewController {
         )
         alert.addAction(UIAlertAction(title: "Eliminar", style: .destructive) { [weak self] _ in
             guard let self = self else { return }
-            self.viewModel.eliminarProducto(self.producto)
+            self.viewModel.eliminarProducto(producto)
             self.navigationController?.popViewController(animated: true)
         })
         alert.addAction(UIAlertAction(title: "Cancelar", style: .cancel))
@@ -217,5 +232,15 @@ class ProductoDetalleViewController: UIViewController {
         lbl.textColor = .white
         lbl.translatesAutoresizingMaskIntoConstraints = false
         return lbl
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard segue.identifier == "DetalleToFormSegue",
+              let formVC = segue.destination as? ProductoFormViewController else { return }
+        formVC.viewModel = viewModel
+        formVC.producto = producto
+        formVC.onSave = { [weak self] in
+            self?.cargarDatos()
+        }
     }
 }

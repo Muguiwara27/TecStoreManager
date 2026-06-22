@@ -11,7 +11,7 @@ import UIKit
 class ConfiguracionViewController: UIViewController {
 
     // MARK: - Data
-    private struct ConfigItem {
+    struct ConfigItem {
         let icon: String
         let titulo: String
         let subtitulo: String

@@ -64,6 +64,10 @@ final class PersistenceController {
         if inMemory {
             container.persistentStoreDescriptions.first?.url = URL(fileURLWithPath: "/dev/null")
         }
+        container.persistentStoreDescriptions.forEach { description in
+            description.shouldMigrateStoreAutomatically = true
+            description.shouldInferMappingModelAutomatically = true
+        }
 
         container.loadPersistentStores { description, error in
             if let error = error as NSError? {

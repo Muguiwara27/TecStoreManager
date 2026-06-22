@@ -34,6 +34,7 @@ class DashboardViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupProgrammaticUIIfNeeded()
         setupBackground()
         styleUIElements()
         setupLogoutButton()
@@ -47,6 +48,99 @@ class DashboardViewController: UIViewController {
     // MARK: - Background
     private func setupBackground() {
         view.backgroundColor = UIColor(red: 0.063, green: 0.063, blue: 0.122, alpha: 1.0)
+    }
+
+    private func setupProgrammaticUIIfNeeded() {
+        guard productosButton == nil else { return }
+
+        let scroll = UIScrollView()
+        scroll.translatesAutoresizingMaskIntoConstraints = false
+        let content = UIView()
+        content.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(scroll)
+        scroll.addSubview(content)
+
+        let avatar = UIImageView()
+        avatar.translatesAutoresizingMaskIntoConstraints = false
+        avatar.contentMode = .scaleAspectFit
+
+        let welcome = UILabel()
+        welcome.translatesAutoresizingMaskIntoConstraints = false
+        welcome.font = UIFont.systemFont(ofSize: 28, weight: .bold)
+        welcome.numberOfLines = 0
+
+        let subtitle = UILabel()
+        subtitle.translatesAutoresizingMaskIntoConstraints = false
+        subtitle.font = UIFont.systemFont(ofSize: 15, weight: .regular)
+
+        let header = UIStackView(arrangedSubviews: [avatar, welcome, subtitle])
+        header.axis = .vertical
+        header.alignment = .center
+        header.spacing = 10
+
+        let productos = makeDashboardButton(action: #selector(goToProductos(_:)))
+        let clientes = makeDashboardButton(action: #selector(goToClientes(_:)))
+        let ventas = makeDashboardButton(action: #selector(goToVentas(_:)))
+        let mapa = makeDashboardButton(action: #selector(goToMapa(_:)))
+        let reportes = makeDashboardButton(action: #selector(goToReportes(_:)))
+        let configuracion = makeDashboardButton(action: #selector(goToConfiguracion(_:)))
+        let acerca = makeDashboardButton(action: #selector(goToAcercaDe(_:)))
+
+        let buttons = UIStackView(arrangedSubviews: [
+            productos, clientes, ventas, mapa, reportes, configuracion, acerca
+        ])
+        buttons.axis = .vertical
+        buttons.spacing = 12
+
+        let stack = UIStackView(arrangedSubviews: [header, buttons])
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .vertical
+        stack.spacing = 26
+        content.addSubview(stack)
+
+        NSLayoutConstraint.activate([
+            scroll.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scroll.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scroll.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scroll.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+
+            content.topAnchor.constraint(equalTo: scroll.topAnchor),
+            content.leadingAnchor.constraint(equalTo: scroll.leadingAnchor),
+            content.trailingAnchor.constraint(equalTo: scroll.trailingAnchor),
+            content.bottomAnchor.constraint(equalTo: scroll.bottomAnchor),
+            content.widthAnchor.constraint(equalTo: scroll.widthAnchor),
+
+            stack.topAnchor.constraint(equalTo: content.topAnchor, constant: 24),
+            stack.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 22),
+            stack.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -22),
+            stack.bottomAnchor.constraint(equalTo: content.bottomAnchor, constant: -28),
+
+            avatar.heightAnchor.constraint(equalToConstant: 76),
+            avatar.widthAnchor.constraint(equalToConstant: 76),
+        ])
+
+        [productos, clientes, ventas, mapa, reportes, configuracion, acerca].forEach {
+            $0.heightAnchor.constraint(equalToConstant: 58).isActive = true
+        }
+
+        avatarImageView = avatar
+        welcomeLabel = welcome
+        subtitleLabel = subtitle
+        productosButton = productos
+        clientesButton = clientes
+        ventasButton = ventas
+        mapaButton = mapa
+        reportesButton = reportes
+        configuracionButton = configuracion
+        acercaDeButton = acerca
+    }
+
+    private func makeDashboardButton(action: Selector) -> UIButton {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.contentHorizontalAlignment = .center
+        button.addTarget(self, action: action, for: .touchUpInside)
+        return button
     }
 
     // MARK: - Estilizado de IBOutlets
@@ -99,54 +193,37 @@ class DashboardViewController: UIViewController {
 
     /// UIKit → UIKit
     @IBAction func goToProductos(_ sender: UIButton) {
-        let storyboard  = UIStoryboard(name: "Main", bundle: nil)
-        let productosVC = storyboard.instantiateViewController(withIdentifier: "ProductosListVC")
-        navigationController?.pushViewController(productosVC, animated: true)
+        performSegue(withIdentifier: "DashboardToProductosSegue", sender: sender)
     }
 
-    /// UIKit → SwiftUI via UIHostingController
+    /// UIKit → SwiftUI via storyboard-hosted UIHostingController
     @IBAction func goToClientes(_ sender: UIButton) {
-        let hostingVC = makeClientesHostingController()
-        hostingVC.title = "Clientes"
-        navigationController?.pushViewController(hostingVC, animated: true)
+        performSegue(withIdentifier: "DashboardToClientesSegue", sender: sender)
     }
 
-    /// UIKit → SwiftUI via UIHostingController
+    /// UIKit → SwiftUI via storyboard-hosted UIHostingController
     @IBAction func goToVentas(_ sender: UIButton) {
-        let hostingVC = makeVentasHostingController()
-        hostingVC.title = "Ventas"
-        navigationController?.pushViewController(hostingVC, animated: true)
+        performSegue(withIdentifier: "DashboardToVentasSegue", sender: sender)
     }
 
-    /// UIKit → SwiftUI via UIHostingController
+    /// UIKit → SwiftUI via storyboard-hosted UIHostingController
     @IBAction func goToMapa(_ sender: UIButton) {
-        let hostingVC = makeMapaHostingController()
-        hostingVC.title = "Mapa GPS"
-        navigationController?.pushViewController(hostingVC, animated: true)
+        performSegue(withIdentifier: "DashboardToMapaSegue", sender: sender)
     }
 
-    /// UIKit → SwiftUI via UIHostingController
+    /// UIKit → SwiftUI via storyboard-hosted UIHostingController
     @IBAction func goToReportes(_ sender: UIButton) {
-        let hostingVC = makeReportesHostingController()
-        hostingVC.title = "Reportes"
-        navigationController?.pushViewController(hostingVC, animated: true)
+        performSegue(withIdentifier: "DashboardToReportesSegue", sender: sender)
     }
 
     /// UIKit → UIKit
     @IBAction func goToConfiguracion(_ sender: UIButton) {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "ConfigVC") as? ConfiguracionViewController {
-            navigationController?.pushViewController(vc, animated: true)
-        } else {
-            navigationController?.pushViewController(ConfiguracionViewController(), animated: true)
-        }
+        performSegue(withIdentifier: "DashboardToConfigSegue", sender: sender)
     }
 
     /// UIKit → UIKit
     @IBAction func goToAcercaDe(_ sender: UIButton) {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "AcercaDeVC")
-        navigationController?.pushViewController(vc, animated: true)
+        performSegue(withIdentifier: "DashboardToAcercaDeSegue", sender: sender)
     }
 
     @objc private func handleLogout() {

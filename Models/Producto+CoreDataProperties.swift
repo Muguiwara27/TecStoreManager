@@ -21,12 +21,14 @@ extension Producto {
     @NSManaged public var fechaRegistro: Date?
     @NSManaged public var estado: Bool
     @NSManaged public var ventas: NSSet?
+    @NSManaged public var ventaDetalles: NSSet?
 
     // Computed helpers
     var codigoSafe: String    { codigo ?? "" }
     var nombreSafe: String    { nombre ?? "" }
     var categoriaSafe: String { categoria ?? "" }
     var ventasArray: [Venta]  { (ventas?.allObjects as? [Venta]) ?? [] }
+    var ventaDetallesArray: [VentaDetalle] { (ventaDetalles?.allObjects as? [VentaDetalle]) ?? [] }
 }
 
 extension Producto: Identifiable {

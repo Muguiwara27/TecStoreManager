@@ -13,6 +13,7 @@ class ProductosListViewController: UIViewController {
 
     // MARK: - ViewModel
     private let viewModel = ProductoViewModel()
+    private var productoSeleccionado: Producto?
 
     // MARK: - IBOutlets (conectados desde el Storyboard)
     @IBOutlet weak var searchBar: UISearchBar!              // UISearchBar
@@ -91,13 +92,27 @@ class ProductosListViewController: UIViewController {
 
     // MARK: - Navigation
     @objc private func goToNuevoProducto() {
-        let formVC = ProductoFormViewController(viewModel: viewModel, producto: nil)
-        formVC.onSave = { [weak self] in
-            self?.viewModel.fetchProductos()
-            self?.reloadTableView()
+        productoSeleccionado = nil
+        performSegue(withIdentifier: "ProductosToFormSegue", sender: nil)
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        switch segue.identifier {
+        case "ProductosToFormSegue":
+            guard let formVC = segue.destination as? ProductoFormViewController else { return }
+            formVC.viewModel = viewModel
+            formVC.producto = productoSeleccionado
+            formVC.onSave = { [weak self] in
+                self?.viewModel.fetchProductos()
+                self?.reloadTableView()
+            }
+        case "ProductosToDetalleSegue":
+            guard let detalleVC = segue.destination as? ProductoDetalleViewController else { return }
+            detalleVC.viewModel = viewModel
+            detalleVC.producto = productoSeleccionado
+        default:
+            break
         }
-        let nav = UINavigationController(rootViewController: formVC)
-        present(nav, animated: true)
     }
 }
 
@@ -136,9 +151,8 @@ extension ProductosListViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let producto  = viewModel.productosFiltrados[indexPath.row]
-        let detalleVC = ProductoDetalleViewController(producto: producto, viewModel: viewModel)
-        navigationController?.pushViewController(detalleVC, animated: true)
+        productoSeleccionado = viewModel.productosFiltrados[indexPath.row]
+        performSegue(withIdentifier: "ProductosToDetalleSegue", sender: tableView.cellForRow(at: indexPath))
     }
 }
 

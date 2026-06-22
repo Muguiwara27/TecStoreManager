@@ -163,9 +163,15 @@ struct VentaRowView: View {
                 Text(venta.cliente?.nombreCompleto ?? "Cliente desconocido")
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(.white)
-                Text(venta.producto?.nombreSafe ?? "Producto desconocido")
+                Text(venta.productosResumen)
                     .font(.caption)
                     .foregroundColor(.gray)
+                if venta.detallesArray.count > 1 {
+                    Text(venta.detallesArray.map { "\($0.cantidad)x \($0.productoNombre)" }.joined(separator: " · "))
+                        .font(.caption2)
+                        .foregroundColor(.gray.opacity(0.75))
+                        .lineLimit(2)
+                }
                 Text(fmt.string(from: venta.fechaVentaSafe))
                     .font(.caption2)
                     .foregroundColor(.gray.opacity(0.7))
@@ -177,7 +183,7 @@ struct VentaRowView: View {
                 Text(formatCurrency(venta.total))
                     .font(.system(size: 14, weight: .bold))
                     .foregroundColor(Color(red: 0.25, green: 0.85, blue: 0.55))
-                Text("×\(venta.cantidad)")
+                Text("×\(venta.cantidadTotal)")
                     .font(.caption2)
                     .foregroundColor(.gray)
             }

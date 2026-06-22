@@ -36,6 +36,10 @@
                         <color key="backgroundColor" red="0.062745098040000002" green="0.062745098040000002" blue="0.1215686275" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>
                     <navigationItem key="navigationItem" title="Login" id="LOG-NI-001"/>
+                    <connections>
+                        <segue destination="DSH-VC-001" kind="show" identifier="LoginToDashboardSegue" id="LOG-SG-DSH"/>
+                        <segue destination="REG-VC-001" kind="show" identifier="LoginToRegistroSegue" id="LOG-SG-REG"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="LOG-FR-001" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -68,6 +72,15 @@
                         <viewLayoutGuide key="safeAreaLayoutGuide" id="DSH-SA-001"/>
                         <color key="backgroundColor" red="0.062745098040000002" green="0.062745098040000002" blue="0.1215686275" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>
+                    <connections>
+                        <segue destination="PRO-VC-001" kind="show" identifier="DashboardToProductosSegue" id="DSH-SG-PRO"/>
+                        <segue destination="CLI-VC-001" kind="show" identifier="DashboardToClientesSegue" id="DSH-SG-CLI"/>
+                        <segue destination="VEN-VC-001" kind="show" identifier="DashboardToVentasSegue" id="DSH-SG-VEN"/>
+                        <segue destination="MAP-VC-001" kind="show" identifier="DashboardToMapaSegue" id="DSH-SG-MAP"/>
+                        <segue destination="REP-VC-001" kind="show" identifier="DashboardToReportesSegue" id="DSH-SG-REP"/>
+                        <segue destination="CFG-VC-001" kind="show" identifier="DashboardToConfigSegue" id="DSH-SG-CFG"/>
+                        <segue destination="ACE-VC-001" kind="show" identifier="DashboardToAcercaDeSegue" id="DSH-SG-ACE"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DSH-FR-001" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -84,10 +97,58 @@
                         <viewLayoutGuide key="safeAreaLayoutGuide" id="PRO-SA-001"/>
                         <color key="backgroundColor" red="0.062745098040000002" green="0.062745098040000002" blue="0.1215686275" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>
+                    <connections>
+                        <segue destination="PRF-VC-001" kind="show" identifier="ProductosToFormSegue" id="PRO-SG-PRF"/>
+                        <segue destination="PRD-VC-001" kind="show" identifier="ProductosToDetalleSegue" id="PRO-SG-PRD"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PRO-FR-001" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2600" y="100"/>
+        </scene>
+
+        <!--Clientes SwiftUI-->
+        <scene sceneID="CLI-SC-001">
+            <objects>
+                <hostingController storyboardIdentifier="ClientesVC" id="CLI-VC-001" customClass="ClientesHostingViewController" customModule="TecStoreManager" customModuleProvider="target" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" title="Clientes" id="CLI-NI-001"/>
+                </hostingController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="CLI-FR-001" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2600" y="900"/>
+        </scene>
+
+        <!--Ventas SwiftUI-->
+        <scene sceneID="VEN-SC-001">
+            <objects>
+                <hostingController storyboardIdentifier="VentasVC" id="VEN-VC-001" customClass="VentasHostingViewController" customModule="TecStoreManager" customModuleProvider="target" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" title="Ventas" id="VEN-NI-001"/>
+                </hostingController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="VEN-FR-001" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3400" y="900"/>
+        </scene>
+
+        <!--Mapa SwiftUI-->
+        <scene sceneID="MAP-SC-001">
+            <objects>
+                <hostingController storyboardIdentifier="MapaVC" id="MAP-VC-001" customClass="MapaHostingViewController" customModule="TecStoreManager" customModuleProvider="target" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" title="Mapa GPS" id="MAP-NI-001"/>
+                </hostingController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="MAP-FR-001" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4200" y="900"/>
+        </scene>
+
+        <!--Reportes SwiftUI-->
+        <scene sceneID="REP-SC-001">
+            <objects>
+                <hostingController storyboardIdentifier="ReportesVC" id="REP-VC-001" customClass="ReportesHostingViewController" customModule="TecStoreManager" customModuleProvider="target" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" title="Reportes" id="REP-NI-001"/>
+                </hostingController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="REP-FR-001" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5000" y="900"/>
         </scene>
 
         <!--AcercaDe-->
@@ -104,6 +165,60 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ACE-FR-001" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3400" y="100"/>
+        </scene>
+
+        <!--Configuracion-->
+        <scene sceneID="CFG-SC-001">
+            <objects>
+                <viewController storyboardIdentifier="ConfigVC" id="CFG-VC-001" customClass="ConfiguracionViewController" customModule="TecStoreManager" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="CFG-VW-001">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeAreaLayoutGuide" id="CFG-SA-001"/>
+                        <color key="backgroundColor" red="0.070588235290000002" green="0.070588235290000002" blue="0.14000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Configuración" id="CFG-NI-001"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="CFG-FR-001" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4200" y="100"/>
+        </scene>
+
+        <!--Producto Form-->
+        <scene sceneID="PRF-SC-001">
+            <objects>
+                <viewController storyboardIdentifier="ProductoFormVC" id="PRF-VC-001" customClass="ProductoFormViewController" customModule="TecStoreManager" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="PRF-VW-001">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeAreaLayoutGuide" id="PRF-SA-001"/>
+                        <color key="backgroundColor" red="0.070588235290000002" green="0.070588235290000002" blue="0.14000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Producto" id="PRF-NI-001"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="PRF-FR-001" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5000" y="100"/>
+        </scene>
+
+        <!--Producto Detalle-->
+        <scene sceneID="PRD-SC-001">
+            <objects>
+                <viewController storyboardIdentifier="ProductoDetalleVC" id="PRD-VC-001" customClass="ProductoDetalleViewController" customModule="TecStoreManager" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="PRD-VW-001">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeAreaLayoutGuide" id="PRD-SA-001"/>
+                        <color key="backgroundColor" red="0.070588235290000002" green="0.070588235290000002" blue="0.14000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Detalle" id="PRD-NI-001"/>
+                    <connections>
+                        <segue destination="PRF-VC-001" kind="show" identifier="DetalleToFormSegue" id="PRD-SG-PRF"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="PRD-FR-001" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5800" y="100"/>
         </scene>
 
     </scenes>

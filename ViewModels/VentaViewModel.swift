@@ -10,6 +10,14 @@ import Foundation
 import CoreData
 import Combine
 
+struct VentaItem: Identifiable {
+    let id = UUID()
+    let producto: Producto
+    var cantidad: Int32
+
+    var subtotal: Double { Double(cantidad) * producto.precio }
+}
+
 final class VentaViewModel: ObservableObject {
 
     // MARK: - Published State
@@ -20,12 +28,14 @@ final class VentaViewModel: ObservableObject {
     @Published var clienteSeleccionado: Cliente?
     @Published var productoSeleccionado: Producto?
     @Published var cantidadTexto: String = ""
+    @Published var items: [VentaItem] = []
 
     // Cálculos automáticos (read-only derivados)
     var cantidad: Int32    { Int32(cantidadTexto) ?? 0 }
     var subtotal: Double   { Double(cantidad) * (productoSeleccionado?.precio ?? 0) }
-    var igv: Double        { subtotal * 0.18 }
-    var total: Double      { subtotal + igv }
+    var subtotalVenta: Double { items.reduce(0) { $0 + $1.subtotal } }
+    var igv: Double        { subtotalVenta * 0.18 }
+    var total: Double      { subtotalVenta + igv }
 
     private let context = PersistenceController.shared.context
 
@@ -47,38 +57,41 @@ final class VentaViewModel: ObservableObject {
             return false
         }
 
-        // Validar producto
-        guard let producto = productoSeleccionado else {
-            errorMessage = "Debe seleccionar un producto."
+        guard !items.isEmpty else {
+            errorMessage = "Agrega al menos un producto a la venta."
             return false
         }
 
-        // Validar cantidad
-        guard cantidad > 0 else {
-            errorMessage = "La cantidad debe ser mayor a 0."
-            return false
-        }
-
-        // Validar stock suficiente
-        guard producto.stock >= cantidad else {
-            errorMessage = "Stock insuficiente. Disponible: \(producto.stock) unidades."
-            return false
+        for item in items {
+            guard item.producto.stock >= item.cantidad else {
+                errorMessage = "Stock insuficiente para \(item.producto.nombreSafe). Disponible: \(item.producto.stock)"
+                return false
+            }
         }
 
         // Crear la venta
         let venta = Venta(context: context)
         venta.idVenta = UUID()
         venta.fechaVenta = Date()
-        venta.cantidad = cantidad
-        venta.precio = producto.precio
-        venta.subtotal = subtotal
+        venta.cantidad = items.reduce(Int32(0)) { $0 + $1.cantidad }
+        venta.precio = 0
+        venta.subtotal = subtotalVenta
         venta.igv = igv
         venta.total = total
         venta.cliente = cliente
-        venta.producto = producto
+        venta.producto = items.first?.producto
 
-        // Descontar stock automáticamente
-        producto.stock -= cantidad
+        // Crear detalles y descontar stock automáticamente
+        for item in items {
+            let detalle = VentaDetalle(context: context)
+            detalle.idDetalle = UUID()
+            detalle.cantidad = item.cantidad
+            detalle.precioUnitario = item.producto.precio
+            detalle.subtotal = item.subtotal
+            detalle.producto = item.producto
+            detalle.venta = venta
+            item.producto.stock -= item.cantidad
+        }
 
         PersistenceController.shared.save()
         fetchVentas()
@@ -89,6 +102,14 @@ final class VentaViewModel: ObservableObject {
 
     // MARK: - Eliminar Venta
     func eliminarVenta(_ venta: Venta) {
+        let detalles = venta.detallesArray
+        if detalles.isEmpty, let producto = venta.producto {
+            producto.stock += venta.cantidad
+        } else {
+            detalles.forEach { detalle in
+                detalle.producto?.stock += detalle.cantidad
+            }
+        }
         context.delete(venta)
         PersistenceController.shared.save()
         fetchVentas()
@@ -99,6 +120,39 @@ final class VentaViewModel: ObservableObject {
         clienteSeleccionado = nil
         productoSeleccionado = nil
         cantidadTexto = ""
+        items = []
+    }
+
+    // MARK: - Items
+    func agregarProductoSeleccionado() -> Bool {
+        guard let producto = productoSeleccionado else {
+            errorMessage = "Debe seleccionar un producto."
+            return false
+        }
+        guard cantidad > 0 else {
+            errorMessage = "La cantidad debe ser mayor a 0."
+            return false
+        }
+
+        let cantidadActual = items.first(where: { $0.producto.objectID == producto.objectID })?.cantidad ?? 0
+        guard producto.stock >= cantidadActual + cantidad else {
+            errorMessage = "Stock insuficiente. Disponible: \(producto.stock), ya agregado: \(cantidadActual)."
+            return false
+        }
+
+        if let index = items.firstIndex(where: { $0.producto.objectID == producto.objectID }) {
+            items[index].cantidad += cantidad
+        } else {
+            items.append(VentaItem(producto: producto, cantidad: cantidad))
+        }
+        productoSeleccionado = nil
+        cantidadTexto = ""
+        errorMessage = ""
+        return true
+    }
+
+    func eliminarItem(_ item: VentaItem) {
+        items.removeAll { $0.id == item.id }
     }
 
     // MARK: - Estadísticas para Reportes

@@ -11,8 +11,8 @@ import UIKit
 class ProductoFormViewController: UIViewController {
 
     // MARK: - Dependencias
-    private let viewModel: ProductoViewModel
-    private let producto: Producto? // nil = crear nuevo
+    var viewModel: ProductoViewModel
+    var producto: Producto? // nil = crear nuevo
     var onSave: (() -> Void)?
 
     init(viewModel: ProductoViewModel, producto: Producto?) {
@@ -20,7 +20,12 @@ class ProductoFormViewController: UIViewController {
         self.producto  = producto
         super.init(nibName: nil, bundle: nil)
     }
-    required init?(coder: NSCoder) { fatalError() }
+
+    required init?(coder: NSCoder) {
+        self.viewModel = ProductoViewModel()
+        self.producto = nil
+        super.init(coder: coder)
+    }
 
     // MARK: - UI
     private let scrollView  = UIScrollView()
@@ -281,7 +286,7 @@ class ProductoFormViewController: UIViewController {
             )
             alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
                 self?.onSave?()
-                self?.dismiss(animated: true)
+                self?.closeForm()
             })
             present(alert, animated: true)
         } else {
@@ -292,6 +297,14 @@ class ProductoFormViewController: UIViewController {
         }
     }
 
-    @objc private func handleCancelar() { dismiss(animated: true) }
+    @objc private func handleCancelar() { closeForm() }
     @objc private func dismissKeyboard() { view.endEditing(true) }
+
+    private func closeForm() {
+        if presentingViewController != nil {
+            dismiss(animated: true)
+        } else {
+            navigationController?.popViewController(animated: true)
+        }
+    }
 }

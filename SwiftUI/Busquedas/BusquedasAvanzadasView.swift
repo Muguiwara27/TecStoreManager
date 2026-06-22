@@ -58,7 +58,7 @@ struct BusquedasAvanzadasView: View {
                         )
                         .foregroundColor(.white)
                         .autocorrectionDisabled()
-                        .onChange(of: busquedaTexto) { _ in buscar() }
+                        .onChange(of: busquedaTexto) { buscar() }
 
                         if !busquedaTexto.isEmpty {
                             Button {
@@ -112,7 +112,7 @@ struct BusquedasAvanzadasView: View {
                 productoVM.fetchProductos()
                 buscar()
             }
-            .onChange(of: moduloSeleccionado) { _ in
+            .onChange(of: moduloSeleccionado) {
                 busquedaTexto = ""
                 buscar()
             }
