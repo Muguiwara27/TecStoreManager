@@ -62,7 +62,7 @@ class LoginViewController: UIViewController {
         // UILabel
         titleLabel?.textColor    = .white
         subtitleLabel?.textColor = .systemGray
-        usuarioLabel?.text = "Correo"
+        usuarioLabel?.text = "Usuario"
         usuarioLabel?.textColor  = .systemGray2
         passwordLabel?.textColor = .systemGray2
         errorLabel?.textColor    = .systemRed
@@ -83,8 +83,8 @@ class LoginViewController: UIViewController {
             tf.leftView = pad
             tf.leftViewMode = .always
         }
-        usuarioTextField?.placeholder = "correo@ejemplo.com"
-        usuarioTextField?.keyboardType = .emailAddress
+        usuarioTextField?.placeholder = "Nombre de usuario"
+        usuarioTextField?.keyboardType = .default
         usuarioTextField?.autocapitalizationType = .none
         usuarioTextField?.autocorrectionType = .no
         passwordTextField?.isSecureTextEntry = true
@@ -122,12 +122,12 @@ class LoginViewController: UIViewController {
 
         let subtitle = UILabel()
         subtitle.translatesAutoresizingMaskIntoConstraints = false
-        subtitle.text = "Inicia sesión con Firebase"
+        subtitle.text = "Inicia sesión con tu cuenta"
         subtitle.font = UIFont.systemFont(ofSize: 15, weight: .regular)
         subtitle.textAlignment = .center
 
-        let emailLabel = makeFieldLabel("Correo")
-        let emailField = makeTextField(placeholder: "correo@ejemplo.com")
+        let usuarioLabel = makeFieldLabel("Usuario")
+        let usuarioField = makeTextField(placeholder: "Nombre de usuario")
 
         let passLabel = makeFieldLabel("Contraseña")
         let passField = makeTextField(placeholder: "Mínimo 6 caracteres")
@@ -151,7 +151,7 @@ class LoginViewController: UIViewController {
 
         let stack = UIStackView(arrangedSubviews: [
             logo, title, subtitle,
-            emailLabel, emailField,
+            usuarioLabel, usuarioField,
             passLabel, passField,
             error, login, register
         ])
@@ -168,7 +168,7 @@ class LoginViewController: UIViewController {
             stack.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor),
 
             logo.heightAnchor.constraint(equalToConstant: 78),
-            emailField.heightAnchor.constraint(equalToConstant: 50),
+            usuarioField.heightAnchor.constraint(equalToConstant: 50),
             passField.heightAnchor.constraint(equalToConstant: 50),
             login.heightAnchor.constraint(equalToConstant: 52),
         ])
@@ -176,8 +176,8 @@ class LoginViewController: UIViewController {
         logoImageView = logo
         titleLabel = title
         subtitleLabel = subtitle
-        usuarioLabel = emailLabel
-        usuarioTextField = emailField
+        self.usuarioLabel = usuarioLabel
+        usuarioTextField = usuarioField
         passwordLabel = passLabel
         passwordTextField = passField
         errorLabel = error
@@ -205,30 +205,27 @@ class LoginViewController: UIViewController {
 
     /// Acción del UIButton "Ingresar" — conectado en Storyboard
     @IBAction func handleLogin(_ sender: UIButton) {
-        let email  = usuarioTextField?.text ?? ""
+        let usuario = usuarioTextField?.text ?? ""
         let password = passwordTextField?.text ?? ""
         setLoading(true)
 
-        Task { @MainActor [weak self] in
-            guard let self = self else { return }
-            let exitoso = await self.viewModel.loginConFirebase(email: email, password: password)
-            self.setLoading(false)
-            self.errorLabel?.text = self.viewModel.errorMessage
+        let exitoso = viewModel.login(usuario: usuario, password: password)
+        setLoading(false)
+        errorLabel?.text = viewModel.errorMessage
 
-            if exitoso {
-                self.navigationController?.setNavigationBarHidden(false, animated: true)
-                self.performSegue(withIdentifier: "LoginToDashboardSegue", sender: sender)
-            } else {
-                let alert = UIAlertController(
-                    title: "Error de Acceso",
-                    message: self.viewModel.errorMessage,
-                    preferredStyle: .alert
-                )
-                alert.addAction(UIAlertAction(title: "Intentar de nuevo", style: .default))
-                self.present(alert, animated: true)
-                if let utf = self.usuarioTextField { self.shakeView(utf) }
-                if let ptf = self.passwordTextField { self.shakeView(ptf) }
-            }
+        if exitoso {
+            navigationController?.setNavigationBarHidden(false, animated: true)
+            performSegue(withIdentifier: "LoginToDashboardSegue", sender: sender)
+        } else {
+            let alert = UIAlertController(
+                title: "Error de Acceso",
+                message: viewModel.errorMessage,
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "Intentar de nuevo", style: .default))
+            present(alert, animated: true)
+            if let utf = usuarioTextField { shakeView(utf) }
+            if let ptf = passwordTextField { shakeView(ptf) }
         }
     }
 

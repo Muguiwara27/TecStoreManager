@@ -34,7 +34,6 @@
 		6DCE206CB33E1A8AE0F4E30C /* ConfiguracionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E1FA7C7C8571726E69AF34D /* ConfiguracionViewController.swift */; };
 		7553A0314E9BD11B82383581 /* VentaDetalle+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DD5976C7CC72597508BF847 /* VentaDetalle+CoreDataProperties.swift */; };
 		77A47D781BC9343D7B39081F /* ReportesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34451D775416FD7FB39265DC /* ReportesViewModel.swift */; };
-		7FFC78F6C49BD74C8AD3C6CB /* FirebaseConfig.example.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7DEB8D1E67C7544137AE25CC /* FirebaseConfig.example.plist */; };
 		848016494E514438AA6DC5FB /* RegistroVentaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E87A4D4DD147173699E238 /* RegistroVentaView.swift */; };
 		848D4E7225D6F45B7D913C01 /* Venta+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38A10F21E44F7EA0C6446AAA /* Venta+CoreDataProperties.swift */; };
 		8C95308A1903CE57FF7ED70F /* VentasListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5EE19A0F1DBFAF31E856D06 /* VentasListView.swift */; };
@@ -42,7 +41,7 @@
 		A018B842F1870974870E53FA /* UbicacionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CCB44BECC9079414E235A20 /* UbicacionViewModel.swift */; };
 		A363864AC56FB0C3AA2358D8 /* TecStoreManager.xcdatamodeld in Resources */ = {isa = PBXBuildFile; fileRef = 7FFDD32D577715F9D9FEEA0C /* TecStoreManager.xcdatamodeld */; };
 		A43FDEA21342D63885CF6D1F /* Usuario+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56604FDE0E050FEC102C18DA /* Usuario+CoreDataProperties.swift */; };
-		A6E81C14A296EFA59BB5198A /* FirebaseAuthAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F95D24ADD3BA5FCE83AFE64 /* FirebaseAuthAPI.swift */; };
+		A6E81C14A296EFA59BB5198A /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F95D24ADD3BA5FCE83AFE64 /* AuthService.swift */; };
 		ADD1D3C098E1C9A42F26A88B /* VentaDetalle+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4FCF78AE555F969BF70B5DF /* VentaDetalle+CoreDataClass.swift */; };
 		B9A56465F644F56B00D383B4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9DA69BD418EF982D478D193F /* LaunchScreen.storyboard */; };
 		C4AEDB7D7318317043A92434 /* Ubicacion+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452DCEBFDB98FB6751E6A38E /* Ubicacion+CoreDataProperties.swift */; };
@@ -76,9 +75,8 @@
 		62B74A0BC626D6513900ACDF /* TecStoreManager.xcdatamodel */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = wrapper.xcdatamodel; path = TecStoreManager.xcdatamodel; sourceTree = "<group>"; };
 		6AC384CD3863F4C50EFCC106 /* Producto+CoreDataProperties.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Producto+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		6DD5976C7CC72597508BF847 /* VentaDetalle+CoreDataProperties.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "VentaDetalle+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		6F95D24ADD3BA5FCE83AFE64 /* FirebaseAuthAPI.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FirebaseAuthAPI.swift; sourceTree = "<group>"; };
+		6F95D24ADD3BA5FCE83AFE64 /* AuthService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		7DB964297F72AF6D511EAC48 /* Main.storyboard */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
-		7DEB8D1E67C7544137AE25CC /* FirebaseConfig.example.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = FirebaseConfig.example.plist; sourceTree = "<group>"; };
 		7F86C300003B8CA47D63D86E /* SceneDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		86CEA90D5EDA7C24C36E4894 /* SwiftUIHostingBridge.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwiftUIHostingBridge.swift; sourceTree = "<group>"; };
 		886E15A931FE47794B79C69E /* BusquedasAvanzadasView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BusquedasAvanzadasView.swift; sourceTree = "<group>"; };
@@ -131,7 +129,7 @@
 		14FA5C77482102EA3A9FCEBB /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				6F95D24ADD3BA5FCE83AFE64 /* FirebaseAuthAPI.swift */,
+				6F95D24ADD3BA5FCE83AFE64 /* AuthService.swift */,
 			);
 			name = Services;
 			path = Services;
@@ -339,7 +337,6 @@
 			children = (
 				7DB964297F72AF6D511EAC48 /* Main.storyboard */,
 				9DA69BD418EF982D478D193F /* LaunchScreen.storyboard */,
-				7DEB8D1E67C7544137AE25CC /* FirebaseConfig.example.plist */,
 				F21E6A2F16D75ADF62373AAA /* Info.plist */,
 			);
 			name = Resources;
@@ -377,7 +374,6 @@
 				E5A72DC0A0F44C10B01137F5 /* Sources */,
 				BB07F963C019646683CDC0D7 /* Frameworks */,
 				B2B466588D72D883C3E43347 /* Resources */,
-				457FAF79E23F35A0EAC9ACC6 /* Copy Firebase REST Config */,
 			);
 			buildRules = (
 			);
@@ -424,35 +420,11 @@
 			files = (
 				56BDBC010013419EBFFFC6F7 /* Main.storyboard in Resources */,
 				B9A56465F644F56B00D383B4 /* LaunchScreen.storyboard in Resources */,
-				7FFC78F6C49BD74C8AD3C6CB /* FirebaseConfig.example.plist in Resources */,
 				A363864AC56FB0C3AA2358D8 /* TecStoreManager.xcdatamodeld in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		457FAF79E23F35A0EAC9ACC6 /* Copy Firebase REST Config */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Resources/FirebaseConfig.example.plist",
-			);
-			name = "Copy Firebase REST Config";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/FirebaseConfig.plist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "set -e\nCONFIG_LOCAL=\"${SRCROOT}/Resources/FirebaseConfig.local.plist\"\nCONFIG_EXAMPLE=\"${SRCROOT}/Resources/FirebaseConfig.example.plist\"\nDEST=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseConfig.plist\"\nmkdir -p \"$(dirname \"$DEST\")\"\nif [ -f \"$CONFIG_LOCAL\" ]; then\n  cp \"$CONFIG_LOCAL\" \"$DEST\"\nelse\n  cp \"$CONFIG_EXAMPLE\" \"$DEST\"\nfi\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		E5A72DC0A0F44C10B01137F5 /* Sources */ = {
@@ -477,7 +449,7 @@
 				848D4E7225D6F45B7D913C01 /* Venta+CoreDataProperties.swift in Sources */,
 				ADD1D3C098E1C9A42F26A88B /* VentaDetalle+CoreDataClass.swift in Sources */,
 				7553A0314E9BD11B82383581 /* VentaDetalle+CoreDataProperties.swift in Sources */,
-				A6E81C14A296EFA59BB5198A /* FirebaseAuthAPI.swift in Sources */,
+				A6E81C14A296EFA59BB5198A /* AuthService.swift in Sources */,
 				456446EBC36B2F87D6DF30B4 /* BusquedasAvanzadasView.swift in Sources */,
 				0081F4D07498186889CBC30D /* ClienteFormView.swift in Sources */,
 				56F1D6D6F920050B5EE39D9C /* ClientesListView.swift in Sources */,

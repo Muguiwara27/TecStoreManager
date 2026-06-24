@@ -51,12 +51,12 @@ class RegistroUsuarioViewController: UIViewController {
         scroll.addSubview(content)
 
         let titleLabel = UILabel()
-        titleLabel.text = "Crear cuenta Firebase"
+        titleLabel.text = "Crear cuenta"
         titleLabel.font = UIFont.systemFont(ofSize: 26, weight: .bold)
         titleLabel.textColor = .white
         titleLabel.textAlignment = .center
 
-        let emailField = makeTextField(placeholder: "correo@ejemplo.com")
+        let usuarioField = makeTextField(placeholder: "Nombre de usuario")
         let passwordField = makeTextField(placeholder: "Contraseña")
         passwordField.isSecureTextEntry = true
         let confirmField = makeTextField(placeholder: "Confirmar contraseña")
@@ -86,7 +86,7 @@ class RegistroUsuarioViewController: UIViewController {
 
         let stack = UIStackView(arrangedSubviews: [
             titleLabel,
-            makeFieldLabel("Correo"), emailField,
+            makeFieldLabel("Usuario"), usuarioField,
             makeFieldLabel("Contraseña"), passwordField,
             makeFieldLabel("Confirmar contraseña"), confirmField,
             makeFieldLabel("Nombre completo"), fullNameField,
@@ -117,7 +117,7 @@ class RegistroUsuarioViewController: UIViewController {
             stack.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -28),
             stack.bottomAnchor.constraint(equalTo: content.bottomAnchor, constant: -32),
 
-            emailField.heightAnchor.constraint(equalToConstant: 50),
+            usuarioField.heightAnchor.constraint(equalToConstant: 50),
             passwordField.heightAnchor.constraint(equalToConstant: 50),
             confirmField.heightAnchor.constraint(equalToConstant: 50),
             fullNameField.heightAnchor.constraint(equalToConstant: 50),
@@ -125,7 +125,7 @@ class RegistroUsuarioViewController: UIViewController {
         ])
 
         scrollView = scroll
-        nombreUsuarioTextField = emailField
+        nombreUsuarioTextField = usuarioField
         passwordTextField = passwordField
         confirmPasswordTextField = confirmField
         nombreCompletoTextField = fullNameField
@@ -168,8 +168,8 @@ class RegistroUsuarioViewController: UIViewController {
             tf.leftView = pad
             tf.leftViewMode = .always
         }
-        nombreUsuarioTextField?.placeholder = "correo@ejemplo.com"
-        nombreUsuarioTextField?.keyboardType = .emailAddress
+        nombreUsuarioTextField?.placeholder = "Nombre de usuario"
+        nombreUsuarioTextField?.keyboardType = .default
         nombreUsuarioTextField?.autocapitalizationType = .none
         nombreUsuarioTextField?.autocorrectionType = .no
         passwordTextField?.isSecureTextEntry = true
@@ -193,7 +193,7 @@ class RegistroUsuarioViewController: UIViewController {
 
     /// Acción del UIButton "Registrar Usuario" — conectado en Storyboard
     @IBAction func handleGuardar(_ sender: UIButton) {
-        let email           = nombreUsuarioTextField?.text ?? ""
+        let nombreUsuario   = nombreUsuarioTextField?.text ?? ""
         let password        = passwordTextField?.text ?? ""
         let confirmPassword = confirmPasswordTextField?.text ?? ""
         let nombreCompleto  = nombreCompletoTextField?.text ?? ""
@@ -206,30 +206,27 @@ class RegistroUsuarioViewController: UIViewController {
         }
         setLoading(true)
 
-        Task { @MainActor [weak self] in
-            guard let self = self else { return }
-            let exitoso = await self.viewModel.registrarUsuarioConFirebase(
-                email: email,
-                password: password,
-                nombreCompleto: nombreCompleto,
-                estado: estado
-            )
-            self.setLoading(false)
-            self.errorLabel?.text = self.viewModel.errorMessage
+        let exitoso = viewModel.registrarUsuario(
+            nombreUsuario: nombreUsuario,
+            password: password,
+            nombreCompleto: nombreCompleto,
+            estado: estado
+        )
+        setLoading(false)
+        errorLabel?.text = viewModel.errorMessage
 
-            if exitoso {
-                let alert = UIAlertController(
-                    title: "Usuario Registrado",
-                    message: "El usuario '\(email)' fue creado exitosamente en Firebase.",
-                    preferredStyle: .alert
-                )
-                alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
-                    self?.navigationController?.popViewController(animated: true)
-                })
-                self.present(alert, animated: true)
-            } else {
-                self.mostrarAlerta(titulo: "Error de Validación", mensaje: self.viewModel.errorMessage)
-            }
+        if exitoso {
+            let alert = UIAlertController(
+                title: "Usuario Registrado",
+                message: "El usuario '\(nombreUsuario)' fue creado exitosamente.",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
+                self?.navigationController?.popViewController(animated: true)
+            })
+            present(alert, animated: true)
+        } else {
+            mostrarAlerta(titulo: "Error de Validación", mensaje: viewModel.errorMessage)
         }
     }
 
